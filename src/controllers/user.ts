@@ -1,6 +1,7 @@
 import { Response, Request } from 'express';
 import { insert, remove, selectById, select_all, update } from '../services/db';
 import User from "../models/user"
+import { hashPass } from '../utils/bcrypt';
 
 const table = "Users"
 
@@ -24,7 +25,11 @@ export async function selectUser(req: Request, res: Response) {
 }
 
 export async function insertUser(req: Request, res: Response) {
-    const user = req.body
+    const { username, password }: User = req.body
+    if (!(username && password)) return res.json({
+        error: "Missing username or password"
+    }).status(401)
+    const user: User = { username: username, password: await hashPass(password) }
     if (!user) return res.json({
         error: "No user specified"
     }).status(401)
@@ -54,9 +59,14 @@ export async function removeUser(req: Request, res: Response) {
     return res.status(200)
 }
 
+// TODO: Fix updating just username or password
 export async function updateUser(req: Request, res: Response) {
     const { id } = req.query
-    const user: User = req.body
+    const { username, password }: User = req.body
+    if (!(username && password)) return res.json({
+        error: "Missing username or password"
+    }).status(401)
+    const user: User = { username: username, password: await hashPass(password) }
     try {
         const data = await update(parseInt(id as string), user, table)
         return res.json({ msg: data }).status(200)
