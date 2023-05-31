@@ -5,11 +5,11 @@ import User from "../models/user"
 const table = "Users"
 
 export async function selectUserId(req: Request, res: Response) {
-    const { id } = req.params
+    const { id } = req.query
 
     try {
-        const user = await selectById(parseInt(id), table)
-        return res.json({ msg: user });
+        const user = await selectById(parseInt(id as string), table, "id,username")
+        return res.json({ msg: user[0] });
     } catch (e) {
         console.log(e)
         return res.json({
@@ -20,7 +20,7 @@ export async function selectUserId(req: Request, res: Response) {
 }
 
 export async function selectUser(req: Request, res: Response) {
-    return res.json({ msg: await select_all(table) })
+    return res.json({ msg: await select_all(table, "id,username") })
 }
 
 export async function insertUser(req: Request, res: Response) {
@@ -42,9 +42,9 @@ export async function insertUser(req: Request, res: Response) {
 }
 
 export async function removeUser(req: Request, res: Response) {
-    const { id } = req.params
+    const { id } = req.query
     try {
-        await remove(parseInt(id), table)
+        await remove(parseInt(id as string), table)
     } catch (e) {
         console.log(e)
         return res.json({
@@ -55,10 +55,10 @@ export async function removeUser(req: Request, res: Response) {
 }
 
 export async function updateUser(req: Request, res: Response) {
-    const { id } = req.params
+    const { id } = req.query
     const user: User = req.body
     try {
-        const data = await update(parseInt(id), user, table)
+        const data = await update(parseInt(id as string), user, table)
         return res.json({ msg: data }).status(200)
     } catch (e) {
         console.log(e)
