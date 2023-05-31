@@ -1,5 +1,5 @@
 import express from "express"
-import { shiftRouterId } from '../src/routes/shift';
+import { shiftRouterId } from '../../src/routes/shift';
 import helmet from "helmet"
 
 const app = express()

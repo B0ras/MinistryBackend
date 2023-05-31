@@ -1,5 +1,5 @@
 import express from "express"
-import { shiftRouter } from '../src/routes/shift';
+import { shiftRouter } from '../../src/routes/shift';
 import helmet from "helmet"
 
 const app = express()

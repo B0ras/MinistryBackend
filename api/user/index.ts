@@ -1,5 +1,5 @@
 import express from "express"
-import { userRouter } from "../src/routes/user"
+import { userRouter } from "../../src/routes/user"
 import helmet from "helmet"
 
 const app = express()
