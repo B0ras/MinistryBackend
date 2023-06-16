@@ -37,19 +37,20 @@ export async function selectShift(req: Request, res: Response) {
 
 export async function insertShift(req: Request, res: Response) {
     const shift = req.body
-    if (!shift) return res.json({
+    if (!shift) return res.status(401).json({
         error: "No shift specified"
-    }).status(401)
+    })
+    // console.log(`SHIFT: ${shift.shift.day}`)
     try {
         await insert(shift, table)
-        return res.json({
+        return res.status(201).json({
             msg: "Shift created"
-        }).status(201)
+        })
     } catch (e) {
         console.log(e)
-        return res.json({
+        return res.status(500).json({
             error: "Could not insert shift"
-        }).status(500)
+        })
     }
 }
 
@@ -63,7 +64,7 @@ export async function removeShift(req: Request, res: Response) {
             error: "Could not remove shift"
         }).status(500)
     }
-    return res.status(200)
+    return res.status(200).send()
 }
 
 export async function updateShift(req: Request, res: Response) {
