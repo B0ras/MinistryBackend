@@ -1,9 +1,9 @@
 import express from "express"
 import { shiftRouter } from '../../src/routes/shift';
 import helmet from "helmet"
+import {createApp} from "../../src/utils/createServer"
 
-const app = express()
-app.use(helmet())
+const app = createApp()
 
 const router = express.Router()
 
