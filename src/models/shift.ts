@@ -4,7 +4,8 @@ interface Shift {
     duration: number,
     personA?: number,
     personB?: number,
-    personC?: number
+    personC?: number,
+    place?: string
 }
 
 export default Shift
