@@ -6,23 +6,25 @@ import { genJWT } from "../utils/jwt";
 const table = "Users"
 export async function loginController(req: Request, res: Response) {
     try {
-        const { username, password } = req.query;
-        if (!(username && password)) return res.json({
+        const { username, password } = req.body;
+        if (!(username && password)) return res.status(401).json({
             error: "Missing username or password"
-        }).status(401)
+        })
         const foundUser = await selectByUsername(username as string, table)
         if (foundUser) {
             if (await comparePass(password as string, foundUser.password)) {
-                console.log("PASSWORD IS CORRECT")
-                return res.json({
-                    jwt: genJWT(foundUser)
+                const { token, expiresIn } = genJWT(foundUser)
+                return res
+                .cookie("SESSION", token, { maxAge: expiresIn, httpOnly: true })
+                .json({
+                    jwt: token
                 })
             }
         }
     } catch (e) {
         console.log(e)
     }
-    return res.json({
+    return res.status(401).json({
         error: "Wrong username or password"
-    }).status(401)
+    })
 }
