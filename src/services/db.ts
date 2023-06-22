@@ -10,7 +10,7 @@ export async function insert(obj, table: string) {
 
     if (error) throw error
 
-    return data
+    return data[0]
 }
 
 

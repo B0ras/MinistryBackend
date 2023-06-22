@@ -25,7 +25,7 @@ export async function selectShiftId(req: Request, res: Response) {
 export async function selectShift(req: Request, res: Response) {
     try {
         return res.json({
-            msg: await select_all(table, `id,day,duration,userA:Users!Shifts_personA_fkey(id,username),
+            data: await select_all(table, `id,day,duration,userA:Users!Shifts_personA_fkey(id,username),
         userB:Users!Shifts_personB_fkey(id,username),
         userC:Users!Shifts_personC_fkey(id,username)`)
         })
@@ -42,9 +42,11 @@ export async function insertShift(req: Request, res: Response) {
     })
     // console.log(`SHIFT: ${shift.shift.day}`)
     try {
-        await insert(shift, table)
+        const data = await insert(shift, table)
         return res.status(201).json({
-            msg: "Shift created"
+            msg: "Shift created",
+            data: data
+
         })
     } catch (e) {
         console.log(e)
