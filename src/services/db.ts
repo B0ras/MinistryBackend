@@ -56,8 +56,10 @@ export async function update(id: number, obj, table: string) {
 }
 
 export async function remove(id: number, table: string) {
-    await supabase
+    const { data } = await supabase
         .from(table)
         .delete()
         .eq("id", id)
+        .select()
+    if (data) return data[0]
 }
