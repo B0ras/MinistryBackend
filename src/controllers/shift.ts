@@ -59,14 +59,16 @@ export async function insertShift(req: Request, res: Response) {
 export async function removeShift(req: Request, res: Response) {
     const { id } = req.query
     try {
-        await remove(parseInt(id as string), table)
+        const data = await remove(parseInt(id as string), table) as Shift
+        return res.status(200).json({
+            id: data.id
+        })
     } catch (e) {
         console.log(e)
         return res.json({
             error: "Could not remove shift"
         }).status(500)
     }
-    return res.status(200).send()
 }
 
 export async function updateShift(req: Request, res: Response) {
