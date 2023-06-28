@@ -4,14 +4,16 @@ import Shift from "../models/shift"
 
 const table = "Shifts"
 
+const params = `id,day,duration,userA:Users!Shifts_personA_fkey(id,username),
+userB:Users!Shifts_personB_fkey(id,username),
+userC:Users!Shifts_personC_fkey(id,username),place:Places!Shifts_place_fkey(place)`
+
 export async function selectShiftId(req: Request, res: Response) {
     const { id } = req.query
     if (!id) return res.json({ error: "No id specified" })
 
     try {
-        const shift = await selectById(parseInt(id as string), table, `id,day,duration,userA:Users!Shifts_personA_fkey(id,username),
-        userB:Users!Shifts_personB_fkey(id,username),
-        userC:Users!Shifts_personC_fkey(id,username)`)
+        const shift = await selectById(parseInt(id as string), table, params)
         return res.json({ msg: shift });
     } catch (e) {
         console.log(e)
@@ -25,9 +27,7 @@ export async function selectShiftId(req: Request, res: Response) {
 export async function selectShift(req: Request, res: Response) {
     try {
         return res.json({
-            data: await select_all(table, `id,day,duration,userA:Users!Shifts_personA_fkey(id,username),
-        userB:Users!Shifts_personB_fkey(id,username),
-        userC:Users!Shifts_personC_fkey(id,username)`)
+            data: await select_all(table, params)
         })
     } catch (e) {
         console.log(e)
