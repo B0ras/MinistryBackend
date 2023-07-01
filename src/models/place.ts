@@ -1,4 +1,4 @@
-interface Place {
+type Place = {
     id: number,
     place: string
 }
