@@ -6,7 +6,7 @@ const table = "Shifts"
 
 const params = `id,day,duration,userA:Users!Shifts_personA_fkey(id,username),
 userB:Users!Shifts_personB_fkey(id,username),
-userC:Users!Shifts_personC_fkey(id,username),place:Places!Shifts_place_fkey(place)`
+userC:Users!Shifts_personC_fkey(id,username),place:Places!Shifts_place_fkey(id,place)`
 
 export async function selectShiftId(req: Request, res: Response) {
     const { id } = req.query
