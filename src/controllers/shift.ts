@@ -75,7 +75,8 @@ export async function updateShift(req: Request, res: Response) {
     const { id } = req.query
     const shift: Shift = req.body
     try {
-        const data = await update(parseInt(id as string), shift, table)
+        await update(parseInt(id as string), shift, table)
+        const data = await selectById(parseInt(id as string), table, params)
         return res.json({ data: data }).status(200)
     } catch (e) {
         console.log(e)
