@@ -76,7 +76,7 @@ export async function updateShift(req: Request, res: Response) {
     const shift: Shift = req.body
     try {
         const data = await update(parseInt(id as string), shift, table)
-        return res.json({ msg: data }).status(200)
+        return res.json({ data: data }).status(200)
     } catch (e) {
         console.log(e)
         return res.json({
