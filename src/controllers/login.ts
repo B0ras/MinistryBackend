@@ -8,7 +8,6 @@ const table = "Users"
 export async function loginController(req: Request, res: Response) {
     try {
         const { username, password } = req.body;
-        const { username2, password2 } = req.query;
         if (!(username && password)) return res.status(401).json({
             error: "Missing username or password"
         })
@@ -18,7 +17,7 @@ export async function loginController(req: Request, res: Response) {
                 const { token, expiresIn } = genJWT(foundUser)
                 const cookies = req.cookies
                 return res
-                    .cookie("SESSION", token, { maxAge: expiresIn + 100000000000, httpOnly: true })
+                    .cookie("SESSION", token, { maxAge: expiresIn + 100000000000, httpOnly: true, sameSite: 'strict' })
                     .json({
                         jwt: token,
                         user: {
