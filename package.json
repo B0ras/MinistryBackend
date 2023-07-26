@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "@supabase/supabase-js": "^2.24.0",
+    "@supabase/supabase-js": "^2.29.0",
     "bcrypt": "^5.1.0",
     "cookie-parser": "^1.4.6",
     "express": "^4.18.2",
@@ -19,6 +19,7 @@
     "@types/jsonwebtoken": "^9.0.2",
     "@types/node": "^20.2.5",
     "cors": "^2.8.5",
+    "supabase": "^1.82.1",
     "vercel": "^31.0.3"
   }
 }
