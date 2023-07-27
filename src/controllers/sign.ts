@@ -30,14 +30,18 @@ export async function signController(req: Request, res: Response) {
 
         const { personA, personB, personC } = shift
 
-        const arrayOfUndefinedPeople = [personA, personB, personC].map((person, index) => {
-            if (!person) return index
+        // const arrayOfUndefinedPeople = [personA, personB, personC].map((person, index) => {
+        //     if (!person) return index
+        // })
+
+        const people = [personA, personB, personC]
+
+        const freeShift = people.find((person) => {
+            if (person) return
         })
 
+        if (!freeShift) return res.status(500).json({ error: "No available shift" })
 
-        if (arrayOfUndefinedPeople.length === 0) return res.status(500).json({ error: "No available space" })
-
-        const assignedShift = assignToFreeShift(shift, user.id, arrayOfUndefinedPeople)
 
         const data = await update(parseInt(id as string), shift, shiftsTable, params)
 
@@ -54,23 +58,25 @@ function assignToFreeShift(shift: Shift, id: number | undefined, arrayOfUndefine
     // This function always assigns to first shift no matter the availability
     // TODO: Fix this
     let assigned = false
-    arrayOfUndefinedPeople.forEach((item) => {
-        if (assigned) return;
-        switch (item) {
-            case 1:
-                shift.personA = id
-                assigned = true
-                break;
-            case 2:
-                shift.personB = id
-                assigned = true
-                break;
-            case 3:
-                shift.personC = id
-                assigned = true
-                break;
-        }
 
-    })
+
+    // arrayOfUndefinedPeople.forEach((item, index) => {
+    //     if (assigned) return;
+    //     switch (index) {
+    //         case 1:
+    //             shift.personA = id
+    //             assigned = true
+    //             break;
+    //         case 2:
+    //             shift.personB = id
+    //             assigned = true
+    //             break;
+    //         case 3:
+    //             shift.personC = id
+    //             assigned = true
+    //             break;
+    //     }
+
+    // })
     return shift
 }
