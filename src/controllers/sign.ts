@@ -17,33 +17,41 @@ export async function signController(req: Request, res: Response) {
     const { id } = req.query
     const token = cookies['SESSION']
 
-    const userId = verifyJWT(token).sub
+    const userIdAsString = verifyJWT(token).sub
 
-    if (!userId) return res.status(401).json({ error: "Unauthorized" })
+    if (!userIdAsString) return res.status(401).json({ error: "Unauthorized" })
+
+    const userId = parseInt(userIdAsString as string)
 
     if (!id) return res.status(500).json({ error: "Id not specified" })
 
     try {
         const shift: Shift = await selectById<Shift>(parseInt(id as string), shiftsTable)
 
-        const user: User = await selectById<User>(parseInt(userId as string), userTable)
-
-        const { personA, personB, personC } = shift
+        // const user: User = await selectById<User>(userId, userTable)
 
         // const arrayOfUndefinedPeople = [personA, personB, personC].map((person, index) => {
         //     if (!person) return index
         // })
 
+
+
+        const { personA, personB, personC } = shift
         const people = [personA, personB, personC]
 
-        const freeShift = people.find((person) => {
-            if (person) return
-        })
-
-        if (!freeShift) return res.status(500).json({ error: "No available shift" })
 
 
-        const data = await update(parseInt(id as string), shift, shiftsTable, params)
+        if (isThereFreeShift(people)) return res.status(500).json({ error: "No available shift" })
+
+
+        const newPeopleAsObjects = assignToFreeShift(people, userId)
+
+
+
+
+        const newShift = { ...shift, ...newPeopleAsObjects }
+
+        const data = await update(parseInt(id as string), newShift, shiftsTable, params)
 
         return res.status(200).json({ data: data })
 
@@ -54,29 +62,33 @@ export async function signController(req: Request, res: Response) {
 
 }
 
-function assignToFreeShift(shift: Shift, id: number | undefined, arrayOfUndefinedPeople: (number | undefined)[]) {
-    // This function always assigns to first shift no matter the availability
-    // TODO: Fix this
-    let assigned = false
+function assignToFreeShift(people: (number | undefined)[], assignee: number) {
+    let assigned = false;
+
+    people = people.map((person) => {
+        if (assigned) return person;
+        if (!person) {
+            person = assignee
+            assigned = true
+        }
+        return person
+    })
+
+    const [personA, personB, personC] = people
 
 
-    // arrayOfUndefinedPeople.forEach((item, index) => {
-    //     if (assigned) return;
-    //     switch (index) {
-    //         case 1:
-    //             shift.personA = id
-    //             assigned = true
-    //             break;
-    //         case 2:
-    //             shift.personB = id
-    //             assigned = true
-    //             break;
-    //         case 3:
-    //             shift.personC = id
-    //             assigned = true
-    //             break;
-    //     }
+    return { personA: personA, personB: personB, personC: personC }
+}
 
-    // })
-    return shift
+function isThereFreeShift(people: (number | undefined)[]) {
+    let isFreeShift = true
+
+    let numberOfFreeShifts = 0
+    people.forEach((person) => {
+        if (!person) numberOfFreeShifts++;
+    })
+
+    if (numberOfFreeShifts !== 0) isFreeShift = false
+
+    return isFreeShift;
 }
