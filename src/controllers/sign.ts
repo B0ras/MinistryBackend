@@ -46,9 +46,6 @@ export async function signController(req: Request, res: Response) {
 
         const newPeopleAsObjects = assignToFreeShift(people, userId)
 
-
-
-
         const newShift = { ...shift, ...newPeopleAsObjects }
 
         const data = await update(parseInt(id as string), newShift, shiftsTable, params)
