@@ -4,7 +4,7 @@ type User = {
     id?: number,
     username: string,
     password: string,
-    role?: Role
+    role?: number
 }
 
 export default User
