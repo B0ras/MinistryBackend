@@ -3,6 +3,7 @@ import { verifyJWT } from '../utils/jwt'
 import { selectById, update } from "../services/db"
 import User from '../models/user'
 import Shift from "../models/shift"
+import { assignToFreeShift, isThereFreeShift, removeFromShift } from '../utils/shift'
 
 const shiftsTable = "Shifts"
 
@@ -12,7 +13,7 @@ const params = `id,day,duration,userA:Users!Shifts_personA_fkey(id,username),
 userB:Users!Shifts_personB_fkey(id,username),
 userC:Users!Shifts_personC_fkey(id,username),place:Places!Shifts_place_fkey(id,place)`
 
-export async function signController(req: Request, res: Response) {
+export async function signToShift(req: Request, res: Response) {
     const { cookies } = req
     const { id } = req.query
     const token = cookies['SESSION']
@@ -59,33 +60,37 @@ export async function signController(req: Request, res: Response) {
 
 }
 
-function assignToFreeShift(people: (number | undefined)[], assignee: number) {
-    let assigned = false;
+export async function signOutOfShift(req: Request, res: Response) {
+    const { cookies } = req
+    const { id } = req.query
+    const token = cookies['SESSION']
 
-    people = people.map((person) => {
-        if (assigned) return person;
-        if (!person) {
-            person = assignee
-            assigned = true
-        }
-        return person
-    })
+    const userIdAsString = verifyJWT(token).sub
 
-    const [personA, personB, personC] = people
+    if (!userIdAsString) return res.status(401).json({ error: "Unauthorized" })
+
+    const userId = parseInt(userIdAsString as string)
+
+    if (!id) return res.status(500).json({ error: "Id not specified" })
 
 
-    return { personA: personA, personB: personB, personC: personC }
-}
+    try {
+        const shift: Shift = await selectById<Shift>(parseInt(id as string), shiftsTable)
 
-function isThereFreeShift(people: (number | undefined)[]) {
-    let isFreeShift = true
+        const { personA, personB, personC } = shift
+        const people = [personA, personB, personC]
+        const newPeopleAsObjects = removeFromShift(people, userId)
 
-    let numberOfFreeShifts = 0
-    people.forEach((person) => {
-        if (!person) numberOfFreeShifts++;
-    })
+        const newShift = { ...shift, ...newPeopleAsObjects }
 
-    if (numberOfFreeShifts !== 0) isFreeShift = false
+        const data = await update(parseInt(id as string), newShift, shiftsTable, params)
 
-    return isFreeShift;
+        return res.status(200).json({ data: data })
+
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({ error: "An error occurred" })
+    }
+
+
 }
