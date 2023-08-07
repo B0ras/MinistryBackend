@@ -18,7 +18,7 @@ export async function loginController(req: Request, res: Response) {
                 const { token, expiresIn } = genJWT(foundUser)
                 // const cookies = req.cookies
                 return res
-                    .cookie("SESSION", token, { maxAge: expiresIn + 100000000000, httpOnly: true, sameSite: "none" })
+                    .cookie("SESSION", token, { maxAge: expiresIn + 100000000000, httpOnly: true, sameSite: "none", secure: true })
                     .json({
                         jwt: token,
                         user: {
